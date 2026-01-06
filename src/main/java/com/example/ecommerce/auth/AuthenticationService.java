@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
 
     @Autowired
-    private  JwtService jwtService;
+    private JwtService jwtService;
     @Autowired
     private  PasswordEncoder passwordEncoder;
     @Autowired
