@@ -1,4 +1,4 @@
 package com.example.ecommerce.inventory;
 
-public class InventoryMovementService {
+public interface InventoryMovementService {
 }
