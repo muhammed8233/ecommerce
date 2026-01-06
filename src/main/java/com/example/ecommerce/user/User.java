@@ -3,6 +3,7 @@ package com.example.ecommerce.user;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Data
 @Builder
+@RequiredArgsConstructor
 @Entity
 @Table(name = "_user")
 public class User implements UserDetails {
