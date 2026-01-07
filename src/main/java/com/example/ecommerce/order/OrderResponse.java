@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor@NoArgsConstructor
 public class OrderResponse {
-    Integer orderId;
+    int orderId;
     String productName;
-    Integer quantity;
+    int quantity;
     BigDecimal unitPrice;
     BigDecimal totalAmount;
     String status;
