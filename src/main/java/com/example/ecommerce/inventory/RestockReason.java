@@ -1,6 +1,6 @@
 package com.example.ecommerce.inventory;
 
-public enum TransactionType {
+public enum RestockReason {
     RESTOCK,
     SALE,
     RETURN,

@@ -26,10 +26,8 @@ public class InventoryMovement {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TransactionType type;
+    private RestockReason reason;
 
-    @Column(nullable = false)
-    private String reason;
 
     @Column(nullable = false, updatable = false)
     private LocalDate createdAt;

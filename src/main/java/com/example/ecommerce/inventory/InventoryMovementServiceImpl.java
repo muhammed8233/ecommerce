@@ -2,7 +2,6 @@ package com.example.ecommerce.inventory;
 
 import com.example.ecommerce.product.Product;
 import com.example.ecommerce.product.ProductRepository;
-import com.example.ecommerce.product.ProductResponse;
 import com.example.ecommerce.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +20,9 @@ public class InventoryMovementServiceImpl implements InventoryMovementService{
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
 
     @Override
-    public ProductResponse restockProduct(Long productId, int quantity) {
+    public void restockProduct(Long productId, int quantity) {
         Product product = productService.findProductById(productId);
 
         product.setStockQuantity(product.getStockQuantity() + quantity);
@@ -33,7 +31,7 @@ public class InventoryMovementServiceImpl implements InventoryMovementService{
         InventoryMovement movement = InventoryMovement.builder()
                 .product(product)
                 .quantityChange(quantity)
-                .reason("Manually restock by admin")
+                .reason(RestockReason.RESTOCK)
                 .createdAt(LocalDate.now())
                 .build();
 

@@ -3,6 +3,9 @@ package com.example.ecommerce.product;
 import com.example.ecommerce.exception.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,18 +50,33 @@ public class ProductServiceImpl implements ProductService{
 
     }
 
-    @Override
-    public List<ProductResponse> getAllProduct() {
-        return productRepository.findAll()
-                .stream()
-                .map(this::mapToProductResponse)
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<ProductResponse> getAllProduct() {
+//        return productRepository.findAll()
+//                .stream()
+//                .map(this::mapToProductResponse)
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(()-> new ProductNotFoundException("product with id"+productId+ "not found"));
+    }
+
+    @Override
+    public Page<ProductResponse> getProducts(String search, Pageable pageable) {
+            Specification<Product> spec = (root, query, cb) -> {
+                if (search == null || search.isEmpty())
+                    return null;
+
+                return cb.or(
+                        cb.like(cb.lower(root.get("productName")), "%" + search.toLowerCase() + "%"),
+                        cb.like(cb.lower(root.get("category")), "%" + search.toLowerCase() + "%"));
+            };
+
+        return productRepository.findAll(spec, pageable)
+                .map(this::mapToProductResponse);
     }
 
     private ProductResponse mapToProductResponse(Product product) {
