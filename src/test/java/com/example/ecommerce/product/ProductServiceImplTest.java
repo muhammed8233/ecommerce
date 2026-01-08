@@ -46,7 +46,7 @@ class ProductServiceImplTest {
                 .stockQuantity(1)
                 .build();
         assertEquals(0, productRepository.findAll().size());
-        Product saveProduct = productService.createProduct(productRequest);
+        ProductResponse saveProduct = productService.createProduct(productRequest);
         assertEquals(1, productRepository.findAll().size());
 
         ProductRequest request = ProductRequest.builder()
@@ -58,7 +58,7 @@ class ProductServiceImplTest {
                 .stockQuantity(1)
                 .build();
         assertEquals(1, productRepository.findAll().size());
-       Product result = productService.updateProduct(saveProduct.getProductId(),request);
+       ProductResponse result = productService.updateProduct(saveProduct.getProductId(),request);
         assertEquals(1, productRepository.findAll().size());
 
         assertEquals("yam", result.getProductName());

@@ -4,10 +4,11 @@ import java.util.List;
 
 public interface ProductService {
 
-     Product createProduct(ProductRequest request);
+     ProductResponse createProduct(ProductRequest request);
 
-     Product updateProduct(Long productId, ProductRequest request);
+     ProductResponse updateProduct(Long productId, ProductRequest request);
 
-     List<Product> getAllProduct();
+     List<ProductResponse> getAllProduct();
 
+    Product findProductById(Long productId);
 }

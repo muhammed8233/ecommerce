@@ -1,5 +1,6 @@
 package com.example.ecommerce.product;
 
+import com.example.ecommerce.exception.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ public class ProductServiceImpl implements ProductService{
     private ProductRepository productRepository;
 
     @Override
-    public Product createProduct(ProductRequest request) {
+    public ProductResponse createProduct(ProductRequest request) {
         Product product = Product.builder()
                 .productName(request.getProductName())
                 .sku(request.getSku())
@@ -26,21 +27,12 @@ public class ProductServiceImpl implements ProductService{
                 .build();
        Product saved = productRepository.save(product);
 
-       return Product.builder()
-               .productId(saved.getId())
-               .productName(saved.getProductName())
-               .description(saved.getDescription())
-               .category(saved.getCategory())
-               .sku(saved.getSku())
-               .price(saved.getPrice())
-               .stockQuantity(saved.getStockQuantity())
-               .build();
-
+       return mapToProductResponse(saved);
 
     }
 
     @Override
-    public Product updateProduct(Long id, ProductRequest request) {
+    public ProductResponse updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id).orElseThrow();
         product.setProductName(request.getProductName());
         product.setCategory(request.getCategory());
@@ -51,29 +43,27 @@ public class ProductServiceImpl implements ProductService{
 
         Product updateProduct = productRepository.save(product);
 
-        return Product.builder()
-                .productId(updateProduct.getId())
-                .productName(updateProduct.getProductName())
-                .category(updateProduct.getCategory())
-                .description(updateProduct.getDescription())
-                .price(updateProduct.getPrice())
-                .sku(updateProduct.getSku())
-                .stockQuantity(updateProduct.getStockQuantity())
-                .build();
-
-
+        return mapToProductResponse(updateProduct);
 
     }
 
     @Override
-    public List<Product> getAllProduct() {
+    public List<ProductResponse> getAllProduct() {
         return productRepository.findAll()
-                .stream().map(this::mapToProductResponse.collect(Collectors.toList());
+                .stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
     }
 
-    private Product mapToProductResponse(Product product) {
-        return Product.builder()
-                .id(product.getId())
+    @Override
+    public Product findProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(()-> new ProductNotFoundException("product with id"+productId+ "not found"));
+    }
+
+    private ProductResponse mapToProductResponse(Product product) {
+        return ProductResponse.builder()
+                .productId(product.getId())
                 .productName(product.getProductName())
                 .description(product.getDescription())
                 .category(product.getCategory())

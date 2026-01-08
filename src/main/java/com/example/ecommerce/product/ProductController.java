@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,23 +21,25 @@ public class ProductController {
     private InventoryMovementService inventoryMovementService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProduct(){
+    public ResponseEntity<List<ProductResponse>> getAllProduct(){
         return ResponseEntity.ok(productService.getAllProduct());
     }
     @PostMapping("/create")
-    public  ResponseEntity<Product> createProduct(@Valid @RequestBody ProductRequest request){
+    public  ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request){
         return ResponseEntity.ok(productService.createProduct(request));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Product> updateProduct(@PathVariable("studentId") Long productId, @Valid
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable("studentId") Long productId, @Valid
                                                          @RequestBody ProductRequest request){
         return ResponseEntity.ok(productService.updateProduct(productId, request));
     }
 
     @PutMapping("/{productId}/restock")
-    public ResponseEntity<Product> restockProduct(@PathVariable Long productId,
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> restockProduct(@PathVariable Long productId,
                                                   @RequestParam int quantity){
-        return ResponseEntity.ok(inventoryMovementService.restockProduct(productId, quantity));
+        inventoryMovementService.restockProduct(productId, quantity);
+        return ResponseEntity.ok("product restock successfully");
     }
 }
