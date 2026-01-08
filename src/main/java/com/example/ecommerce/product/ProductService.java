@@ -1,9 +1,13 @@
 package com.example.ecommerce.product;
 
-import org.jspecify.annotations.Nullable;
-import org.springframework.http.ResponseEntity;
+import java.util.List;
 
 public interface ProductService {
 
-     ProductResponse createProduct(ProductRequest request);
+     Product createProduct(ProductRequest request);
+
+     Product updateProduct(Long productId, ProductRequest request);
+
+     List<Product> getAllProduct();
+
 }

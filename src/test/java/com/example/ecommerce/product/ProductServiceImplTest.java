@@ -34,4 +34,38 @@ class ProductServiceImplTest {
         productService.createProduct(productRequest);
         assertEquals(1, productRepository.findAll().size());
     }
+
+    @Test
+    public void testUpdateProduct(){
+        ProductRequest productRequest = ProductRequest.builder()
+                .productName("bread")
+                .category("medium")
+                .description("family size")
+                .price(new BigDecimal("2000"))
+                .sku("BHM")
+                .stockQuantity(1)
+                .build();
+        assertEquals(0, productRepository.findAll().size());
+        Product saveProduct = productService.createProduct(productRequest);
+        assertEquals(1, productRepository.findAll().size());
+
+        ProductRequest request = ProductRequest.builder()
+                .productName("yam")
+                .category("small")
+                .description("small size")
+                .price(new BigDecimal("2000"))
+                .sku("BHM")
+                .stockQuantity(1)
+                .build();
+        assertEquals(1, productRepository.findAll().size());
+       Product result = productService.updateProduct(saveProduct.getProductId(),request);
+        assertEquals(1, productRepository.findAll().size());
+
+        assertEquals("yam", result.getProductName());
+        assertEquals("BHM", result.getSku());
+        assertEquals("small", result.getCategory());
+
+    }
+
+
 }

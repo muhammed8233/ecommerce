@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService{
@@ -12,7 +15,7 @@ public class ProductServiceImpl implements ProductService{
     private ProductRepository productRepository;
 
     @Override
-    public ProductResponse createProduct(ProductRequest request) {
+    public Product createProduct(ProductRequest request) {
         Product product = Product.builder()
                 .productName(request.getProductName())
                 .sku(request.getSku())
@@ -23,8 +26,8 @@ public class ProductServiceImpl implements ProductService{
                 .build();
        Product saved = productRepository.save(product);
 
-       return ProductResponse.builder()
-               .id(saved.getId())
+       return Product.builder()
+               .productId(saved.getId())
                .productName(saved.getProductName())
                .description(saved.getDescription())
                .category(saved.getCategory())
@@ -35,4 +38,49 @@ public class ProductServiceImpl implements ProductService{
 
 
     }
+
+    @Override
+    public Product updateProduct(Long id, ProductRequest request) {
+        Product product = productRepository.findById(id).orElseThrow();
+        product.setProductName(request.getProductName());
+        product.setCategory(request.getCategory());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setSku(request.getSku());
+        product.setStockQuantity(request.getStockQuantity());
+
+        Product updateProduct = productRepository.save(product);
+
+        return Product.builder()
+                .productId(updateProduct.getId())
+                .productName(updateProduct.getProductName())
+                .category(updateProduct.getCategory())
+                .description(updateProduct.getDescription())
+                .price(updateProduct.getPrice())
+                .sku(updateProduct.getSku())
+                .stockQuantity(updateProduct.getStockQuantity())
+                .build();
+
+
+
+    }
+
+    @Override
+    public List<Product> getAllProduct() {
+        return productRepository.findAll()
+                .stream().map(this::mapToProductResponse.collect(Collectors.toList());
+    }
+
+    private Product mapToProductResponse(Product product) {
+        return Product.builder()
+                .id(product.getId())
+                .productName(product.getProductName())
+                .description(product.getDescription())
+                .category(product.getCategory())
+                .sku(product.getSku())
+                .price(product.getPrice())
+                .stockQuantity(product.getStockQuantity())
+                .build();
+    }
+
 }
