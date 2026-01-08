@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
@@ -25,7 +26,7 @@ class ProductServiceImplTest {
                 .productName("bread")
                 .category("medium")
                 .description("family size")
-                .price(new BigDecimal(2000))
+                .price(new BigDecimal("2000"))
                 .sku("BHM")
                 .stockQuantity(1)
                 .build();
