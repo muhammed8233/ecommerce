@@ -4,15 +4,14 @@ import com.example.ecommerce.inventory.InventoryMovementService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.autoconfigure.web.DataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/product")
@@ -30,14 +29,18 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProducts(search, pageable));
     }
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public  ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request){
-        return ResponseEntity.ok(productService.createProduct(request));
+        ProductResponse create = productService.createProduct(request);
+        return new ResponseEntity<>(create, HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable("studentId") Long productId, @Valid
                                                          @RequestBody ProductRequest request){
-        return ResponseEntity.ok(productService.updateProduct(productId, request));
+        ProductResponse update = productService.updateProduct(productId, request);
+        return new ResponseEntity<>(update, HttpStatus.CREATED);
     }
 
     @PutMapping("/{productId}/restock")

@@ -7,7 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -28,7 +29,16 @@ public class Order {
     private  Status status;
 
     @Column(nullable = false, unique = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
+    private BigDecimal totalAmount;
+
+    @Version
+    private int version;
+
+    @PrePersist
+    protected void onCreate(){
+        this.createdAt = LocalDateTime.now();
+    }
 
 }

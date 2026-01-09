@@ -6,10 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,14 +48,6 @@ public class ProductServiceImpl implements ProductService{
         return mapToProductResponse(updateProduct);
 
     }
-
-//    @Override
-//    public List<ProductResponse> getAllProduct() {
-//        return productRepository.findAll()
-//                .stream()
-//                .map(this::mapToProductResponse)
-//                .collect(Collectors.toList());
-//    }
 
     @Override
     public Product findProductById(Long productId) {

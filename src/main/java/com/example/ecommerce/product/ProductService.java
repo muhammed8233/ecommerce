@@ -12,8 +12,6 @@ public interface ProductService {
 
      ProductResponse updateProduct(Long productId, ProductRequest request);
 
-//     List<ProductResponse> getAllProduct();
-
      Product findProductById(Long productId);
 
      Page<ProductResponse> getProducts(String search, Pageable pageable);

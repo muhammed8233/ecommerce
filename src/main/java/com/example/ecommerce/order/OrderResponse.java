@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor@NoArgsConstructor
 public class OrderResponse {
-    int orderId;
+    Long orderId;
     String productName;
     int quantity;
     BigDecimal unitPrice;
     BigDecimal totalAmount;
-    String status;
+    Status status;
     LocalDateTime createdAt;
     String trackingNumber;
 }
