@@ -22,10 +22,6 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService{
 
     }
 
-    @Override
-    public Payment findByReference(String reference) {
-        return paymentRepository.findByReference(reference);
-    }
 
 
 }

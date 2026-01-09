@@ -7,5 +7,4 @@ public interface PaymentGatewayService {
     String initiatePayment(BigDecimal amount, String currency, String orderId);
     PaymentStatus checkPaymentStatus(String referenceId);
 
-    Payment findByReference(String reference);
 }

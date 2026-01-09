@@ -123,7 +123,8 @@ public class OrderServiceImpl implements OrderService{
         PaymentStatus status = paymentGatewayService.checkPaymentStatus(reference);
 
         if (status == PaymentStatus.SUCCESS) {
-           Payment payment = paymentGatewayService.findByReference(reference);
+            Payment payment = paymentRepository.findByReference(reference)
+                    .orElseThrow(() -> new RuntimeException("Payment reference not found: " + reference));
 
             Order order = payment.getOrder();
             order.setStatus(Status.PAID);
