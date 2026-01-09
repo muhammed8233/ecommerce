@@ -17,4 +17,7 @@ class OrderServiceImplTest {
     @Test
     void finalizeTransaction() {
     }
+
+    @Test
+    void getOrders(){}
 }

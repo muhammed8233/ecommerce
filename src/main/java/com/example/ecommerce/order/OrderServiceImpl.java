@@ -20,13 +20,12 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -152,7 +151,7 @@ public class OrderServiceImpl implements OrderService{
     }
     private void validateStockAvailability(OrderRequest request) {
         for (OrderItemRequest item : request.getItemList()) {
-            int currentStock = inventoryMovementRepository.getStock(item.getProductId());
+            int currentStock = inventoryMovementRepository.countById(item.getProductId());
             if (currentStock < item.getQuantity()) {
                 throw new InsufficientStockException("Product " + item.getProductId() + " is out of stock");
             }
@@ -183,7 +182,6 @@ public class OrderServiceImpl implements OrderService{
             paymentRepository.save(payment);
         }
     }
-
     @Override
     public Page<OrderResponse> getOrders(String search, Pageable pageable) {
         Specification<Order> spec = (root, query, cb) -> {
@@ -208,7 +206,7 @@ public class OrderServiceImpl implements OrderService{
 
             return cb.or(predicates.toArray(new Predicate[0]));
         };
-        return productRepository.findAll(spec, pageable)
+        return orderRepository.findAll(spec, pageable)
                 .map(this::mapToOrderResponse);
     }
 
