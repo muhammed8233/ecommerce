@@ -1,11 +1,9 @@
 package com.example.ecommerce.order;
 
-import com.example.ecommerce.payment.PaymentGatewayService;
-import com.example.ecommerce.payment.PaymentRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+
+import java.awt.print.Pageable;
 
 public interface OrderService {
     String placeOrderAndInitiatePayment(OrderRequest request);
@@ -13,4 +11,6 @@ public interface OrderService {
     OrderResponse placeOrder(OrderRequest request);
 
     void finalizeTransaction(String reference);
+
+    Page<OrderResponse> getOrders(String search, Pageable pageable);
 }

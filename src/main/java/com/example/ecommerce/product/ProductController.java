@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,8 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> listProducts(@RequestParam String search,
-                                                                    @PageableDefault(size = 10,sort = "productName")Pageable pageable){
+                                                                    @PageableDefault(size = 10,sort = "productName",
+                                                                            direction = Sort.Direction.DESC)Pageable pageable){
         return ResponseEntity.ok(productService.getProducts(search, pageable));
     }
     @PostMapping("/create")
