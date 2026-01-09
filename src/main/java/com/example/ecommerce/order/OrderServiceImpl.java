@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.hibernate.internal.util.collections.ArrayHelper.forEach;
+
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService{
@@ -83,8 +85,6 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private Order savePendingOrder(OrderRequest request, User user, BigDecimal totalAmount) {
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(()-> new ProductNotFoundException("product not found"));
 
         Order order = Order.builder()
                 .user(user)
@@ -92,14 +92,18 @@ public class OrderServiceImpl implements OrderService{
                 .totalAmount(totalAmount)
                 .build();
 
-        OrderItem item = OrderItem.builder()
-                .order(order)
-                .product(product)
-                .quantity(request.getQuantity())
-                .unitPrice(product.getPrice())
-                .build();
+        request.getItemList().stream()
+                .map(orderItemRequest -> {
+                    Product product = productRepository.findById(orderItemRequest.getProductId())
+                            .orElseThrow(() -> new ProductNotFoundException("Product not found: " + request.getProductId()));
 
-        order.setOrderItems(List.of(item));
+
+                    return OrderItem.builder()
+                            .product(product)
+                            .quantity(orderItemRequest.getQuantity())
+                            .unitPrice(product.getPrice())
+                            .build();})
+                .forEach(order::addOrderItem);
 
         return orderRepository.save(order);
     }
