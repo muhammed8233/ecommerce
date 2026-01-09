@@ -4,7 +4,7 @@ import com.example.ecommerce.exception.PaymentNotFoundException;
 import com.example.ecommerce.exception.ProductNotFoundException;
 import com.example.ecommerce.inventory.InventoryMovementRepository;
 import com.example.ecommerce.inventory.InventoryMovementService;
-import com.example.ecommerce.inventory.RestockReason;
+import com.example.ecommerce.inventory.Reason;
 import com.example.ecommerce.payment.Payment;
 import com.example.ecommerce.payment.PaymentGatewayService;
 import com.example.ecommerce.payment.PaymentRepository;
@@ -20,8 +20,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -81,11 +83,23 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private Order savePendingOrder(OrderRequest request, User user, BigDecimal totalAmount) {
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(()-> new ProductNotFoundException("product not found"));
+
         Order order = Order.builder()
                 .user(user)
                 .status(Status.PENDING)
                 .totalAmount(totalAmount)
                 .build();
+
+        OrderItem item = OrderItem.builder()
+                .order(order)
+                .product(product)
+                .quantity(request.getQuantity())
+                .unitPrice(product.getPrice())
+                .build();
+
+        order.setOrderItems(List.of(item));
 
         return orderRepository.save(order);
     }
@@ -115,8 +129,16 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private BigDecimal calculateTotal(OrderRequest request) {
-        return null;
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + request.getProductId()));
+
+        BigDecimal price = product.getPrice();
+        BigDecimal quantity = BigDecimal.valueOf(request.getQuantity());
+
+        return price.multiply(quantity).setScale(2, RoundingMode.HALF_UP);
     }
+
+
 
     @Override
     public void finalizeTransaction(String reference) {
@@ -124,7 +146,7 @@ public class OrderServiceImpl implements OrderService{
 
         if (status == PaymentStatus.SUCCESS) {
             Payment payment = paymentRepository.findByReference(reference)
-                    .orElseThrow(() -> new RuntimeException("Payment reference not found: " + reference));
+                    .orElseThrow(() -> new PaymentNotFoundException("Payment reference not found: " + reference));
 
             Order order = payment.getOrder();
             order.setStatus(Status.PAID);
@@ -134,7 +156,7 @@ public class OrderServiceImpl implements OrderService{
                     .forEach(item -> inventoryMovementService.deductStock(
                             item.getProduct().getId(),
                             item.getQuantity(),
-                            RestockReason.SALE));
+                            Reason.SALE));
 
             orderRepository.save(order);
             paymentRepository.save(payment);

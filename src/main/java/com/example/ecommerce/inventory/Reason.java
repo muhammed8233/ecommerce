@@ -1,6 +1,6 @@
 package com.example.ecommerce.inventory;
 
-public enum RestockReason {
+public enum Reason {
     RESTOCK,
     SALE,
     RETURN,

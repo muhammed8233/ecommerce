@@ -1,15 +1,12 @@
 package com.example.ecommerce.inventory;
 
 import com.example.ecommerce.exception.ProductNotFoundException;
-import com.example.ecommerce.order.OrderItem;
 import com.example.ecommerce.product.Product;
 import com.example.ecommerce.product.ProductRepository;
 import com.example.ecommerce.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -33,15 +30,14 @@ public class InventoryMovementServiceImpl implements InventoryMovementService{
         InventoryMovement movement = InventoryMovement.builder()
                 .product(product)
                 .quantityChange(quantity)
-                .reason(RestockReason.RESTOCK)
-                .createdAt(LocalDate.now())
+                .reason(Reason.RESTOCK)
                 .build();
 
         inventoryMovementRepository.save(movement);
     }
 
     @Override
-    public void deductStock(Long productId, int quantity, RestockReason reason) {
+    public void deductStock(Long productId, int quantity, Reason reason) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
