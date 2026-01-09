@@ -1,5 +1,7 @@
 package com.example.ecommerce.inventory;
 
+import com.example.ecommerce.exception.ProductNotFoundException;
+import com.example.ecommerce.order.OrderItem;
 import com.example.ecommerce.product.Product;
 import com.example.ecommerce.product.ProductRepository;
 import com.example.ecommerce.product.ProductService;
@@ -33,6 +35,23 @@ public class InventoryMovementServiceImpl implements InventoryMovementService{
                 .quantityChange(quantity)
                 .reason(RestockReason.RESTOCK)
                 .createdAt(LocalDate.now())
+                .build();
+
+        inventoryMovementRepository.save(movement);
+    }
+
+    @Override
+    public void deductStock(Long productId, int quantity, RestockReason reason) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        product.setStockQuantity(product.getStockQuantity() - quantity);
+        productRepository.save(product);
+
+        InventoryMovement movement = InventoryMovement.builder()
+                .product(product)
+                .quantityChange(-quantity)
+                .reason(reason)
                 .build();
 
         inventoryMovementRepository.save(movement);

@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class PaymentGatewayServiceImpl implements PaymentGatewayService{
 
+    private final PaymentRepository paymentRepository;
+
     @Override
     public String initiatePayment(BigDecimal amount, String currency, String orderId) {
         return "FAKE_REF_" + System.currentTimeMillis();
@@ -18,6 +20,11 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService{
     public PaymentStatus checkPaymentStatus(String referenceId) {
         return PaymentStatus.SUCCESS;
 
+    }
+
+    @Override
+    public Payment findByReference(String reference) {
+        return paymentRepository.findByReference(reference);
     }
 
 

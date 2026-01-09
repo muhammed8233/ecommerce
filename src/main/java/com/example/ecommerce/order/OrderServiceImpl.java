@@ -1,8 +1,10 @@
 package com.example.ecommerce.order;
 
+import com.example.ecommerce.exception.PaymentNotFoundException;
 import com.example.ecommerce.exception.ProductNotFoundException;
 import com.example.ecommerce.inventory.InventoryMovementRepository;
 import com.example.ecommerce.inventory.InventoryMovementService;
+import com.example.ecommerce.inventory.RestockReason;
 import com.example.ecommerce.payment.Payment;
 import com.example.ecommerce.payment.PaymentGatewayService;
 import com.example.ecommerce.payment.PaymentRepository;
@@ -18,7 +20,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -67,17 +68,16 @@ public class OrderServiceImpl implements OrderService{
         return reference;
     }
 
-    private OrderItem savedOrderItems(OrderRequest request, Order order) {
+    private void savedOrderItems(OrderRequest request, Order order) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(()-> new ProductNotFoundException("product not found"));
 
-        OrderItem orderItem = OrderItem.builder()
+        OrderItem.builder()
                 .order(order)
                 .product(product)
                 .quantity(request.getQuantity())
                 .unitPrice(product.getPrice())
                 .build();
-        return orderItem;
     }
 
     private Order savePendingOrder(OrderRequest request, User user, BigDecimal totalAmount) {
@@ -115,14 +115,28 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private BigDecimal calculateTotal(OrderRequest request) {
+        return null;
     }
 
+    @Override
     public void finalizeTransaction(String reference) {
         PaymentStatus status = paymentGatewayService.checkPaymentStatus(reference);
 
         if (status == PaymentStatus.SUCCESS) {
-            OrderItem orderItems = orderRepository.findById().orElseThrow();
-            inventoryMovementService.deductStock(orderItems);
+           Payment payment = paymentGatewayService.findByReference(reference);
+
+            Order order = payment.getOrder();
+            order.setStatus(Status.PAID);
+            payment.setStatus(PaymentStatus.SUCCESS);
+
+            order.getOrderItems()
+                    .forEach(item -> inventoryMovementService.deductStock(
+                            item.getProduct().getId(),
+                            item.getQuantity(),
+                            RestockReason.SALE));
+
+            orderRepository.save(order);
+            paymentRepository.save(payment);
         }
     }
 

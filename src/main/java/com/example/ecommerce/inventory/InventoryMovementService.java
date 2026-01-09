@@ -7,6 +7,5 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public interface InventoryMovementService {
     void restockProduct(Long productId, int quantity);
-    void deductStock(OrderItem orderItem);
-
+    void deductStock(Long id, int quantity, RestockReason reason);
 }

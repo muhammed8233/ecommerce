@@ -11,4 +11,6 @@ public interface OrderService {
     String placeOrderAndInitiatePayment(OrderRequest request);
 
     OrderResponse placeOrder(OrderRequest request);
+
+    void finalizeTransaction(String reference);
 }
