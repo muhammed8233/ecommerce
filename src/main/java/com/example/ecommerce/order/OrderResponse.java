@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@AllArgsConstructor@NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderResponse {
     Long orderId;
     String productName;
